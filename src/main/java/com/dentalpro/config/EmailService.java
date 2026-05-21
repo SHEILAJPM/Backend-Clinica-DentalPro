@@ -91,6 +91,57 @@ public class EmailService {
         send(to, subject, html);
     }
 
+    public void sendCitaReminder(String toEmail, String doctorNombre,
+                                  String pacienteNombre, String fecha,
+                                  String hora, String motivo) {
+        String subject = "⏰ Recordatorio de cita en 30 minutos — DentalPro";
+        String html = """
+            <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#0f172a;color:#e2e8f0;border-radius:12px;overflow:hidden">
+              <div style="background:#1e3a5f;padding:32px 40px;text-align:center">
+                <h1 style="color:#60a5fa;margin:0;font-size:28px;letter-spacing:-1px">🦷 DentalPro</h1>
+                <p style="color:#93c5fd;margin:8px 0 0;font-size:14px">Sistema de Gestión de Clínica Dental</p>
+              </div>
+              <div style="padding:40px">
+                <h2 style="color:#f1f5f9;font-size:20px;margin-top:0">Hola, %s 👋</h2>
+                <p style="color:#94a3b8;line-height:1.7">
+                  Te recordamos que tienes una cita dental programada en <strong style="color:#f59e0b">30 minutos</strong>.
+                </p>
+                <div style="background:#1e293b;border-radius:10px;padding:24px;margin:24px 0;border-left:4px solid #f59e0b">
+                  <table style="width:100%%;border-collapse:collapse">
+                    <tr>
+                      <td style="padding:8px 0;color:#64748b;font-size:13px;width:120px">👤 Paciente</td>
+                      <td style="padding:8px 0;color:#f1f5f9;font-weight:600">%s</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:8px 0;color:#64748b;font-size:13px">📅 Fecha</td>
+                      <td style="padding:8px 0;color:#f1f5f9;font-weight:600">%s</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:8px 0;color:#64748b;font-size:13px">🕐 Hora</td>
+                      <td style="padding:8px 0;color:#f59e0b;font-weight:700;font-size:18px">%s</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:8px 0;color:#64748b;font-size:13px">📋 Motivo</td>
+                      <td style="padding:8px 0;color:#f1f5f9">%s</td>
+                    </tr>
+                  </table>
+                </div>
+                <div style="background:#052e16;border:1px solid #166534;border-radius:8px;padding:16px;margin:16px 0">
+                  <p style="margin:0;color:#86efac;font-size:13px;text-align:center">
+                    ✅ Por favor preséntese con anticipación en la clínica
+                  </p>
+                </div>
+                <p style="color:#64748b;font-size:13px;margin-top:32px;text-align:center">
+                  DentalPro — Cuidamos tu sonrisa con tecnología de primer nivel.
+                </p>
+              </div>
+            </div>
+            """.formatted(doctorNombre, pacienteNombre, fecha, hora,
+                          motivo != null && !motivo.isBlank() ? motivo : "Sin motivo especificado");
+
+        send(toEmail, subject, html);
+    }
+
     private void send(String to, String subject, String html) {
         try {
             MimeMessage message = mailSender.createMimeMessage();

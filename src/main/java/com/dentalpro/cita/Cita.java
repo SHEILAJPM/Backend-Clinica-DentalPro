@@ -33,6 +33,9 @@ public class Cita {
     @Column(nullable = false)
     private Estado estado;
 
+    @Column(nullable = false, columnDefinition = "BOOLEAN NOT NULL DEFAULT FALSE")
+    private Boolean recordatorioEnviado = false;
+
     public enum Estado { PENDIENTE, ATENDIDO, CANCELADO, REAGENDADO }
 
     public Long getId() { return id; }
@@ -48,4 +51,6 @@ public class Cita {
     public void setMotivo(String v) { this.motivo = v; }
     public Estado getEstado() { return estado; }
     public void setEstado(Estado v) { this.estado = v; }
+    public Boolean getRecordatorioEnviado() { return recordatorioEnviado; }
+    public void setRecordatorioEnviado(Boolean v) { this.recordatorioEnviado = v; }
 }

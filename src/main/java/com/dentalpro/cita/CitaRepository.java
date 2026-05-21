@@ -18,4 +18,7 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
     boolean existeConflicto(@Param("odontologoId") Long odontologoId,
                             @Param("fecha") LocalDate fecha,
                             @Param("hora") String hora);
+
+    @Query("SELECT c FROM Cita c WHERE c.fecha = :fecha AND c.recordatorioEnviado = false AND c.estado IN (com.dentalpro.cita.Cita.Estado.PENDIENTE, com.dentalpro.cita.Cita.Estado.REAGENDADO)")
+    List<Cita> findPendientesDeRecordatorio(@Param("fecha") LocalDate fecha);
 }
