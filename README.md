@@ -388,3 +388,16 @@ Paciente ──────────── Cita ─────────�
 | `404 Not Found` | Recurso no encontrado |
 | `409 Conflict` | Conflicto (ej. DNI o email duplicado) |
 | `500 Internal Server Error` | Error interno del servidor |
+
+
+## 🛠️ Autoría y Créditos
+
+Este proyecto fue diseñado, desarrollado e implementado en su totalidad por:
+
+* **Desarrolladora:** Sheila JPM
+* **LinkedIn:** [Sheila Jacqueline Principe Merino](https://www.linkedin.com/in/sheila-jacqueline-principe-merino-1579802aa/)
+* **GitHub:** [@SHEILAJPM](https://github.com/SHEILAJPM)
+* **Contacto:** [principemerinosheila@Gmail.com](mailto:tu-correo@email.com)
+
+---
+*Proyecto desarrollado con fines de portafolio y demostración técnica en Ingeniería de Sistemas e Informática.*
