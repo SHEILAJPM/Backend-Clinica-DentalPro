@@ -74,12 +74,10 @@ app.mail.dev-mode=false
 
 ```bash
 # Clonar y compilar
-mvn clean package -DskipTests
-
+git clone https://github.com/SHEILAJPM/Backend-Clinica-DentalPro.git
+# Entrar a la carpeta
+cd Backend-Clinica-DentalPro
 # Ejecutar
-java -jar target/Backend-Clinica-DentalPro-*.jar
-
-# O directamente con Maven
 mvn spring-boot:run
 ```
 
