@@ -3,6 +3,8 @@
 API REST desarrollada con **Spring Boot 3.4.5** para la gestión integral de una clínica dental. Incluye autenticación JWT, control de roles, manejo de citas, atenciones y generación de reportes en PDF.
 
 ---
+## FRONTEND
+https://github.com/JuanVictorFY/Frontend-Clinica-DentalPro.git
 
 ## Tecnologías
 
@@ -74,12 +76,10 @@ app.mail.dev-mode=false
 
 ```bash
 # Clonar y compilar
-mvn clean package -DskipTests
-
+git clone https://github.com/SHEILAJPM/Backend-Clinica-DentalPro.git
+# Entrar a la carpeta
+cd Backend-Clinica-DentalPro
 # Ejecutar
-java -jar target/Backend-Clinica-DentalPro-*.jar
-
-# O directamente con Maven
 mvn spring-boot:run
 ```
 
@@ -390,3 +390,16 @@ Paciente ──────────── Cita ─────────�
 | `404 Not Found` | Recurso no encontrado |
 | `409 Conflict` | Conflicto (ej. DNI o email duplicado) |
 | `500 Internal Server Error` | Error interno del servidor |
+
+
+## 🛠️ Autoría y Créditos
+
+Este proyecto fue diseñado, desarrollado e implementado en su totalidad por:
+
+* **Desarrolladora:** Sheila JPM
+* **LinkedIn:** [Sheila Jacqueline Principe Merino](https://www.linkedin.com/in/sheila-jacqueline-principe-merino-1579802aa/)
+* **GitHub:** [@SHEILAJPM](https://github.com/SHEILAJPM)
+* **Contacto:** [principemerinosheila@Gmail.com](mailto:tu-correo@email.com)
+
+---
+*Proyecto desarrollado con fines de portafolio y demostración técnica en Ingeniería de Sistemas e Informática.*
