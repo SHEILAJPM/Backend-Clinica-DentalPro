@@ -3,6 +3,8 @@
 API REST desarrollada con **Spring Boot 3.4.5** para la gestión integral de una clínica dental. Incluye autenticación JWT, control de roles, manejo de citas, atenciones y generación de reportes en PDF.
 
 ---
+## FRONTEND
+https://github.com/JuanVictorFY/Frontend-Clinica-DentalPro.git
 
 ## Tecnologías
 
