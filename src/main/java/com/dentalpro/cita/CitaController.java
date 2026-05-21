@@ -20,7 +20,16 @@ public class CitaController {
     }
 
     @GetMapping
-    ResponseEntity<List<CitaDto>> listar(@RequestParam(required = false) String fecha) {
+    ResponseEntity<List<CitaDto>> listar(
+            @RequestParam(required = false) String fecha,
+            @RequestParam(required = false) Long pacienteId,
+            @RequestParam(required = false) Long odontologoId) {
+        if (pacienteId != null) {
+            return ResponseEntity.ok(citaService.listarPorPaciente(pacienteId));
+        }
+        if (odontologoId != null) {
+            return ResponseEntity.ok(citaService.listarPorOdontologoYFecha(odontologoId, fecha));
+        }
         return ResponseEntity.ok(citaService.listarPorFecha(fecha));
     }
 

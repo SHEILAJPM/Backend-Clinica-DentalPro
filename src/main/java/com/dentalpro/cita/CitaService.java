@@ -28,6 +28,16 @@ public class CitaService {
         return citaRepository.findByFecha(localDate).stream().map(this::toDto).toList();
     }
 
+    public List<CitaDto> listarPorPaciente(Long pacienteId) {
+        return citaRepository.findByPacienteIdOrderByFechaDescHoraDesc(pacienteId).stream().map(this::toDto).toList();
+    }
+
+    public List<CitaDto> listarPorOdontologoYFecha(Long odontologoId, String fecha) {
+        LocalDate localDate = fecha != null ? LocalDate.parse(fecha) : LocalDate.now();
+        return citaRepository.findByOdontologoIdAndFechaOrderByHoraAsc(odontologoId, localDate)
+                .stream().map(this::toDto).toList();
+    }
+
     public boolean verificarDisponibilidad(Long odontologoId, String fecha, String hora) {
         return !citaRepository.existeConflicto(odontologoId, LocalDate.parse(fecha), hora);
     }

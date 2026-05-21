@@ -35,6 +35,12 @@ public class ReporteService {
         );
     }
 
+    public ReporteDto findById(Long id) {
+        return reporteRepository.findById(id)
+                .map(this::toDto)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reporte no encontrado"));
+    }
+
     public ReporteDto findByCita(Long citaId) {
         return reporteRepository.findByCitaId(citaId)
                 .map(this::toDto)

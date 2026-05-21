@@ -26,6 +26,11 @@ public class ReporteController {
         return ResponseEntity.ok(reporteService.listar(page, size));
     }
 
+    @GetMapping("/{id}")
+    ResponseEntity<ReporteDto> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(reporteService.findById(id));
+    }
+
     @GetMapping("/cita/{citaId}")
     ResponseEntity<ReporteDto> findByCita(@PathVariable Long citaId) {
         return ResponseEntity.ok(reporteService.findByCita(citaId));

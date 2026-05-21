@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
 public class AtencionService {
 
@@ -29,8 +31,26 @@ public class AtencionService {
         return toDto(atencionRepository.save(a));
     }
 
+    public List<AtencionDto> listarPorPaciente(Long pacienteId) {
+        return atencionRepository.findByCitaPacienteIdOrderByFechaDesc(pacienteId)
+                .stream().map(this::toDto).toList();
+    }
+
+    public AtencionDto obtenerPorCita(Long citaId) {
+        return atencionRepository.findByCitaId(citaId).map(this::toDto).orElse(null);
+    }
+
     private AtencionDto toDto(Atencion a) {
-        return new AtencionDto(a.getId(), a.getCita().getId(),
-                a.getDiagnostico(), a.getTratamiento(), a.getObservaciones(), a.getFecha());
+        return new AtencionDto(
+                a.getId(),
+                a.getCita().getId(),
+                a.getCita().getPaciente().getId(),
+                a.getCita().getPaciente().getNombreCompleto(),
+                a.getCita().getOdontologo().getNombreCompleto(),
+                a.getDiagnostico(),
+                a.getTratamiento(),
+                a.getObservaciones(),
+                a.getFecha()
+        );
     }
 }
