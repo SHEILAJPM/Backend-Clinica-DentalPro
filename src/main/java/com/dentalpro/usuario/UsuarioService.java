@@ -1,5 +1,6 @@
 package com.dentalpro.usuario;
 
+import com.dentalpro.cita.CitaRepository;
 import com.dentalpro.usuario.dto.UsuarioDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,10 +14,12 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CitaRepository citaRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, CitaRepository citaRepository) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.citaRepository = citaRepository;
     }
 
     public List<UsuarioDto> listar() {
@@ -61,6 +64,10 @@ public class UsuarioService {
 
     public void eliminar(Long id) {
         getOrThrow(id);
+        if (citaRepository.existsByOdontologoId(id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "No se puede eliminar el usuario porque tiene citas registradas");
+        }
         usuarioRepository.deleteById(id);
     }
 

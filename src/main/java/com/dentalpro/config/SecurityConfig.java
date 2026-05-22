@@ -50,6 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/atenciones/**").hasAnyRole("ADMINISTRADOR", "ODONTOLOGO")
                         .requestMatchers(HttpMethod.GET, "/api/reportes/**").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "ODONTOLOGO")
                         .requestMatchers("/api/reportes/**").hasAnyRole("ADMINISTRADOR", "ODONTOLOGO")
+                        .requestMatchers("/api/stats/**").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.GET, "/api/usuarios/odontologos").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "ODONTOLOGO")
                         .requestMatchers("/api/usuarios/**").hasRole("ADMINISTRADOR")
                         .anyRequest().authenticated()

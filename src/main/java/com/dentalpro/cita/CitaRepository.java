@@ -21,4 +21,15 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
 
     @Query("SELECT c FROM Cita c WHERE c.fecha = :fecha AND c.recordatorioEnviado = false AND c.estado IN (com.dentalpro.cita.Cita.Estado.PENDIENTE, com.dentalpro.cita.Cita.Estado.REAGENDADO)")
     List<Cita> findPendientesDeRecordatorio(@Param("fecha") LocalDate fecha);
+
+    @Query("SELECT c.estado, COUNT(c) FROM Cita c WHERE c.fecha >= :inicio AND c.fecha <= :fin GROUP BY c.estado")
+    List<Object[]> countByEstadoForPeriod(@Param("inicio") LocalDate inicio, @Param("fin") LocalDate fin);
+
+    @Query("SELECT c.odontologo.nombreCompleto, COUNT(c) FROM Cita c WHERE c.fecha >= :inicio AND c.fecha <= :fin GROUP BY c.odontologo.id, c.odontologo.nombreCompleto ORDER BY COUNT(c) DESC")
+    List<Object[]> countByOdontologoForPeriod(@Param("inicio") LocalDate inicio, @Param("fin") LocalDate fin);
+
+    @Query("SELECT c.fecha, COUNT(c) FROM Cita c WHERE c.fecha >= :desde GROUP BY c.fecha ORDER BY c.fecha ASC")
+    List<Object[]> countByFechaSince(@Param("desde") LocalDate desde);
+
+    boolean existsByOdontologoId(Long odontologoId);
 }
