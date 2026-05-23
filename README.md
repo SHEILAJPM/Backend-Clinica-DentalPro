@@ -1,10 +1,14 @@
-# Backend - Clínica DentalPro
+# Backend — Clínica DentalPro
 
-API REST desarrollada con **Spring Boot 3.4.5** para la gestión integral de una clínica dental. Incluye autenticación JWT, control de roles, manejo de citas, atenciones y generación de reportes en PDF.
+API REST desarrollada con **Spring Boot 3.4.5** para la gestión integral de una clínica dental. Incluye autenticación JWT, control de roles, manejo de citas, atenciones, historial clínico, catálogo de tratamientos, pagos y generación de reportes en PDF.
 
 ---
-## FRONTEND
+
+## Frontend
+
 https://github.com/JuanVictorFY/Frontend-Clinica-DentalPro.git
+
+---
 
 ## Tecnologías
 
@@ -12,12 +16,12 @@ https://github.com/JuanVictorFY/Frontend-Clinica-DentalPro.git
 |---|---|
 | Java | 21 |
 | Spring Boot | 3.4.5 |
-| Spring Security | (incluido en Boot) |
-| Spring Data JPA / Hibernate | (incluido en Boot) |
+| Spring Security | incluido en Boot |
+| Spring Data JPA / Hibernate | incluido en Boot |
 | PostgreSQL (Neon) | — |
 | JWT (JJWT) | 0.12.6 |
-| JavaMail (Gmail SMTP) | (incluido en Boot) |
-| Maven | — |
+| JavaMail (Gmail SMTP) | incluido en Boot |
+| Maven | 3.9+ |
 
 ---
 
@@ -75,11 +79,8 @@ app.mail.dev-mode=false
 ## Levantar el proyecto
 
 ```bash
-# Clonar y compilar
 git clone https://github.com/SHEILAJPM/Backend-Clinica-DentalPro.git
-# Entrar a la carpeta
 cd Backend-Clinica-DentalPro
-# Ejecutar
 mvn spring-boot:run
 ```
 
@@ -87,17 +88,29 @@ La API queda disponible en `http://localhost:8080`.
 
 ---
 
-## Usuarios por defecto
+## Datos por defecto
 
-Al iniciar la aplicación por primera vez se crean automáticamente los siguientes usuarios:
+Al iniciar la aplicación por primera vez se crean automáticamente:
+
+### Usuarios
 
 | Nombre | Email | Contraseña | Rol |
 |---|---|---|---|
-| Administrador General | admin@dental.com | Admin123! | ADMINISTRADOR |
-| Recepcionista | recepcion@dental.com | Admin123! | RECEPCIONISTA |
-| Dr. Odontólogo | doctor@dental.com | Admin123! | ODONTOLOGO |
+| Administrador General | admin@dental.com | 123456 | ADMINISTRADOR |
+| Recepcionista | recepcion@dental.com | 123456 | RECEPCIONISTA |
+| Dr. Carlos Mendoza | doctor@dental.com | 123456 | ODONTOLOGO |
+| Dra. Laura Quispe | doctora@dental.com | 123456 | ODONTOLOGO |
 
-> Cambia las contraseñas tras el primer inicio de sesión.
+### Pacientes (8 registros)
+Ana Torres, Luis García, María Flores, Jorge Castro, Rosa Mamani, Carlos Ríos, Sofía Paredes, Pedro Suárez.
+
+### Otras tablas con datos de ejemplo
+- **historial_clinico** — 8 fichas médicas con alergias, condiciones y grupo sanguíneo
+- **tratamiento_catalogo** — 8 tratamientos (limpieza, extracción, blanqueamiento, ortodoncia, endodoncia, obturación, implante, profilaxis)
+- **citas** — 8 citas en estado ATENDIDO
+- **atenciones** — 8 registros clínicos vinculados a las citas
+- **reportes** — 8 reportes generados automáticamente
+- **pagos** — 8 pagos (5 PAGADO, 3 PENDIENTE)
 
 ---
 
@@ -111,7 +124,6 @@ Authorization: Bearer <token>
 
 **Duración del token:** 24 horas.
 
-**Claims del token:**
 | Claim | Descripción |
 |---|---|
 | `sub` | Email del usuario |
@@ -132,6 +144,9 @@ Authorization: Bearer <token>
 | `/api/citas/**` | ✅ | ✅ | ✅ |
 | `/api/atenciones/**` | ✅ | ❌ | ✅ |
 | `/api/reportes/**` | ✅ | ❌ | ✅ |
+| `/api/historial/**` | ✅ | ✅ | ✅ |
+| `/api/tratamientos/**` | ✅ | ❌ | ❌ |
+| `/api/pagos/**` | ✅ | ✅ | ❌ |
 
 ---
 
@@ -139,50 +154,21 @@ Authorization: Bearer <token>
 
 ### Autenticación — `POST /api/auth/**` (públicos)
 
-#### Iniciar sesión (personal)
 ```
-POST /api/auth/login
+POST /api/auth/login               { "email": "...", "password": "..." }
+POST /api/auth/login-paciente      { "email": "...", "password": "..." }
+POST /api/auth/registro-paciente   { nombreCompleto, dni, fechaNacimiento, telefono, email, password }
+POST /api/auth/forgot-password     { "email": "..." }
+POST /api/auth/verify-code         { "email": "...", "code": "123456" }
+POST /api/auth/reset-password      { "email": "...", "code": "123456", "newPassword": "..." }
 ```
-```json
-// Request
-{ "email": "admin@dental.com", "password": "Admin123!" }
 
-// Response 200
+**Respuesta login:**
+```json
 {
   "token": "eyJ...",
   "user": { "id": 1, "nombreCompleto": "...", "email": "...", "rol": "ADMINISTRADOR" }
 }
-```
-
-#### Iniciar sesión (paciente)
-```
-POST /api/auth/login-paciente
-```
-Misma estructura que el login de personal.
-
-#### Registrar paciente
-```
-POST /api/auth/registro-paciente
-```
-```json
-// Request
-{
-  "nombreCompleto": "Juan Pérez",
-  "dni": "12345678",
-  "fechaNacimiento": "1990-05-15",
-  "telefono": "987654321",
-  "email": "juan@email.com",
-  "password": "miPassword123"
-}
-// Response 201
-{ "mensaje": "Paciente registrado exitosamente" }
-```
-
-#### Recuperación de contraseña
-```
-POST /api/auth/forgot-password    { "email": "..." }
-POST /api/auth/verify-code        { "email": "...", "code": "123456" }
-POST /api/auth/reset-password     { "email": "...", "code": "123456", "newPassword": "..." }
 ```
 
 ---
@@ -191,58 +177,57 @@ POST /api/auth/reset-password     { "email": "...", "code": "123456", "newPasswo
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| `GET` | `/api/usuarios` | Listar todos los usuarios |
-| `GET` | `/api/usuarios/odontologos` | Listar solo odontólogos |
-| `GET` | `/api/usuarios/{id}` | Obtener usuario por ID |
-| `POST` | `/api/usuarios` | Crear usuario |
-| `PUT` | `/api/usuarios/{id}` | Actualizar usuario |
-| `DELETE` | `/api/usuarios/{id}` | Eliminar usuario |
-
-**UsuarioDto:**
-```json
-{
-  "id": 1,
-  "nombreCompleto": "Dr. García",
-  "email": "garcia@dental.com",
-  "password": "Admin123!",
-  "rol": "ODONTOLOGO",
-  "activo": true
-}
-```
+| `GET` | `/api/usuarios` | Listar todos |
+| `GET` | `/api/usuarios/odontologos` | Listar odontólogos |
+| `GET` | `/api/usuarios/{id}` | Obtener por ID |
+| `POST` | `/api/usuarios` | Crear |
+| `PUT` | `/api/usuarios/{id}` | Actualizar |
+| `DELETE` | `/api/usuarios/{id}` | Eliminar |
 
 ---
 
 ### Pacientes — `/api/pacientes`
 
-| Método | Ruta | Descripción | Acceso |
-|---|---|---|---|
-| `GET` | `/api/pacientes?page=1&size=10` | Listar paginado | Admin, Recepción, Odontólogo |
-| `GET` | `/api/pacientes/buscar?q=texto` | Buscar por nombre o DNI | Admin, Recepción, Odontólogo |
-| `GET` | `/api/pacientes/{id}` | Obtener por ID | Admin, Recepción, Odontólogo |
-| `POST` | `/api/pacientes` | Crear paciente | Admin, Recepción |
-| `PUT` | `/api/pacientes/{id}` | Actualizar paciente | Admin, Recepción |
-| `DELETE` | `/api/pacientes/{id}` | Eliminar paciente | Admin, Recepción |
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/api/pacientes?page=1&size=10` | Listar paginado |
+| `GET` | `/api/pacientes/buscar?q=texto` | Buscar por nombre o DNI |
+| `GET` | `/api/pacientes/{id}` | Obtener por ID |
+| `POST` | `/api/pacientes` | Crear |
+| `PUT` | `/api/pacientes/{id}` | Actualizar |
+| `DELETE` | `/api/pacientes/{id}` | Eliminar |
 
-**Respuesta paginada `GET /api/pacientes`:**
 ```json
+// PacienteDto
 {
-  "content": [ { "id": 1, "nombreCompleto": "...", "dni": "12345678", ... } ],
-  "totalElements": 50,
-  "totalPages": 5,
-  "currentPage": 1,
-  "size": 10
+  "id": 1,
+  "nombreCompleto": "Ana Torres Ramírez",
+  "dni": "12345678",
+  "fechaNacimiento": "1990-03-15",
+  "telefono": "987654321",
+  "email": "ana.torres@gmail.com"
 }
 ```
 
-**PacienteDto:**
+---
+
+### Historial Clínico — `/api/historial`
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/api/historial/paciente/{pacienteId}` | Obtener ficha médica |
+| `PUT` | `/api/historial/paciente/{pacienteId}` | Crear o actualizar ficha médica |
+
 ```json
+// HistorialClinicoDto
 {
   "id": 1,
-  "nombreCompleto": "María López",
-  "dni": "12345678",
-  "fechaNacimiento": "1985-03-20",
-  "telefono": "987000111",
-  "email": "maria@email.com"
+  "pacienteId": 1,
+  "alergias": "Penicilina",
+  "condicionesMedicas": "Ninguna",
+  "medicamentosActuales": "Ninguno",
+  "grupoSanguineo": "B+",
+  "fechaActualizacion": "2026-05-23"
 }
 ```
 
@@ -257,35 +242,13 @@ POST /api/auth/reset-password     { "email": "...", "code": "123456", "newPasswo
 | `GET` | `/api/citas?fecha=...&odontologoId={id}` | Listar por odontólogo y fecha |
 | `GET` | `/api/citas/disponibilidad?odontologoId=&fecha=&hora=` | Verificar disponibilidad |
 | `GET` | `/api/citas/{id}` | Obtener por ID |
-| `POST` | `/api/citas` | Crear cita |
-| `PUT` | `/api/citas/{id}` | Actualizar cita (→ estado REAGENDADO) |
-| `PATCH` | `/api/citas/{id}/cancelar` | Cancelar cita (→ estado CANCELADO) |
+| `POST` | `/api/citas` | Crear |
+| `PUT` | `/api/citas/{id}` | Actualizar (→ REAGENDADO) |
+| `PATCH` | `/api/citas/{id}/cancelar` | Cancelar (→ CANCELADO) |
 | `PATCH` | `/api/citas/{id}/estado` | Cambiar estado manualmente |
-| `PUT` | `/api/citas/{id}/finalizar` | Marcar como atendida (→ estado ATENDIDO) |
+| `PUT` | `/api/citas/{id}/finalizar` | Marcar atendida (→ ATENDIDO) |
 
-**Estados válidos:** `PENDIENTE` → `ATENDIDO` / `CANCELADO` / `REAGENDADO`
-
-**CitaDto:**
-```json
-{
-  "id": 1,
-  "pacienteId": 5,
-  "pacienteNombre": "María López",
-  "odontologoId": 2,
-  "odontologoNombre": "Dr. García",
-  "fecha": "2025-06-01",
-  "hora": "10:00",
-  "motivo": "Limpieza dental",
-  "estado": "PENDIENTE"
-}
-```
-
-**Verificar disponibilidad:**
-```
-GET /api/citas/disponibilidad?odontologoId=2&fecha=2025-06-01&hora=10:00
-→ true  (disponible)
-→ false (ya tiene cita en ese horario)
-```
+**Estados:** `PENDIENTE` → `ATENDIDO` / `CANCELADO` / `REAGENDADO`
 
 ---
 
@@ -293,24 +256,63 @@ GET /api/citas/disponibilidad?odontologoId=2&fecha=2025-06-01&hora=10:00
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| `POST` | `/api/atenciones` | Registrar atención |
+| `POST` | `/api/atenciones` | Registrar atención (genera reporte automáticamente) |
 | `GET` | `/api/atenciones?pacienteId={id}` | Historial de un paciente |
-| `GET` | `/api/atenciones/cita/{citaId}` | Atención de una cita específica |
+| `GET` | `/api/atenciones/cita/{citaId}` | Atención de una cita |
 
-**AtencionDto:**
+---
+
+### Catálogo de Tratamientos — `/api/tratamientos` (solo ADMINISTRADOR)
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/api/tratamientos` | Listar todos |
+| `GET` | `/api/tratamientos/{id}` | Obtener por ID |
+| `POST` | `/api/tratamientos` | Crear |
+| `PUT` | `/api/tratamientos/{id}` | Actualizar |
+| `DELETE` | `/api/tratamientos/{id}` | Eliminar |
+
 ```json
+// TratamientoCatalogoDto
 {
   "id": 1,
-  "citaId": 10,
-  "pacienteId": 5,
-  "pacienteNombre": "María López",
-  "odontologoNombre": "Dr. García",
-  "diagnostico": "Caries en molar superior",
-  "tratamiento": "Empaste de resina",
-  "observaciones": "Control en 6 meses",
-  "fecha": "2025-06-01"
+  "nombre": "Limpieza dental",
+  "descripcion": "Eliminación de sarro y placa bacteriana",
+  "precio": 80.0,
+  "duracionMinutos": 45
 }
 ```
+
+---
+
+### Pagos — `/api/pagos` (Admin y Recepcionista)
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/api/pagos` | Listar todos |
+| `GET` | `/api/pagos/{id}` | Obtener por ID |
+| `GET` | `/api/pagos/atencion/{atencionId}` | Pago de una atención |
+| `POST` | `/api/pagos` | Registrar pago |
+| `PATCH` | `/api/pagos/{id}/estado` | Cambiar estado (`PENDIENTE` → `PAGADO` / `ANULADO`) |
+
+```json
+// PagoDto
+{
+  "id": 1,
+  "atencionId": 1,
+  "pacienteId": 1,
+  "pacienteNombre": "Ana Torres Ramírez",
+  "odontologoNombre": "Dr. Carlos Mendoza",
+  "citaFecha": "2026-05-01",
+  "monto": 80.0,
+  "metodoPago": "EFECTIVO",
+  "fechaPago": "2026-05-02",
+  "estado": "PAGADO"
+}
+```
+
+**Estados de pago:** `PENDIENTE` → `PAGADO` / `ANULADO`
+**Métodos de pago:** `EFECTIVO` / `TARJETA` / `TRANSFERENCIA`
 
 ---
 
@@ -318,18 +320,11 @@ GET /api/citas/disponibilidad?odontologoId=2&fecha=2025-06-01&hora=10:00
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| `GET` | `/api/reportes?page=1&size=10` | Listar reportes paginados |
-| `GET` | `/api/reportes/{id}` | Obtener reporte por ID |
+| `GET` | `/api/reportes?page=1&size=10` | Listar paginados |
+| `GET` | `/api/reportes/{id}` | Obtener por ID |
 | `GET` | `/api/reportes/cita/{citaId}` | Reporte de una cita |
-| `POST` | `/api/reportes/generar/{citaId}` | Generar reporte desde una cita |
-| `GET` | `/api/reportes/{id}/pdf` | Descargar reporte como PDF |
-
-**Descarga de PDF:**
-```
-GET /api/reportes/{id}/pdf
-Content-Type: application/pdf
-Content-Disposition: attachment; filename=reporte-{id}.pdf
-```
+| `POST` | `/api/reportes/generar/{citaId}` | Generar desde cita |
+| `GET` | `/api/reportes/{id}/pdf` | Descargar PDF |
 
 ---
 
@@ -338,17 +333,20 @@ Content-Disposition: attachment; filename=reporte-{id}.pdf
 ```
 src/main/java/com/dentalpro/
 ├── auth/               # Login, registro y recuperación de contraseña
-├── cita/               # Gestión de citas (entidad, servicio, controlador, DTO)
-├── paciente/           # Gestión de pacientes
 ├── usuario/            # Gestión de usuarios del personal
+├── paciente/           # Gestión de pacientes
+├── historial/          # Historial clínico por paciente
+├── cita/               # Gestión de citas
 ├── atencion/           # Registros de atención clínica
-├── reporte/            # Generación y descarga de reportes PDF
+├── reporte/            # Generación de reportes PDF
+├── tratamiento/        # Catálogo de tratamientos y precios
+├── pago/               # Registro de pagos por atención
 └── config/
-    ├── SecurityConfig.java    # Configuración de Spring Security y CORS
+    ├── SecurityConfig.java    # Spring Security y CORS
     ├── JwtUtil.java           # Generación y validación de tokens JWT
     ├── JwtAuthFilter.java     # Filtro HTTP para autenticación JWT
-    ├── DataInitializer.java   # Seeder de usuarios por defecto
-    └── EmailService.java      # Servicio de envío de correos
+    ├── DataInitializer.java   # Seeder de datos por defecto
+    └── EmailService.java      # Envío de correos (recuperación contraseña)
 ```
 
 ---
@@ -356,24 +354,28 @@ src/main/java/com/dentalpro/
 ## Modelo de datos
 
 ```
-Usuario ──────────────────┐
-  id, nombreCompleto,      │ odontologo_id
-  email, password,         │
-  rol, activo              │
-                           ↓
-Paciente ──────────── Cita ──────────── Atencion
-  id, nombreCompleto,   id, fecha,        id, citaId,
-  dni, fechaNacimiento, hora, motivo,     diagnostico,
-  telefono, email       estado            tratamiento,
-                           │              observaciones,
-                           │              fecha
-                           └──────────── Reporte
-                                          id, citaId,
-                                          pacienteNombre,
-                                          diagnostico,
-                                          tratamiento,
-                                          fecha
+Usuario ──────────────────────────────┐
+  id, nombreCompleto, email,          │ odontologo_id
+  password, rol, activo               │
+                                      ↓
+Paciente ──────────────────────── Cita ──────────── Atencion ──── Reporte
+  id, nombreCompleto, dni,         id, fecha, hora,   id, citaId,    id, citaId,
+  fechaNacimiento,                 motivo, estado,    diagnostico,   diagnostico,
+  telefono, email                  recordatorio       tratamiento,   tratamiento,
+     │                                  │             observaciones  fecha
+     │                                  │                 │
+     ↓                                  └──── Pago        │
+HistorialClinico                          id, atencionId, └── TratamientoCatalogo
+  id, pacienteId,                         monto,           id, nombre, descripcion,
+  alergias,                               metodoPago,      precio, duracionMinutos
+  condicionesMedicas,                     fechaPago,
+  medicamentosActuales,                   estado
+  grupoSanguineo,
+  fechaActualizacion
 ```
+
+**Total de tablas: 8**
+`usuarios` · `pacientes` · `historial_clinico` · `citas` · `atenciones` · `reportes` · `tratamiento_catalogo` · `pagos`
 
 ---
 
@@ -383,23 +385,25 @@ Paciente ──────────── Cita ─────────�
 |---|---|
 | `200 OK` | Petición exitosa |
 | `201 Created` | Recurso creado |
-| `204 No Content` | Operación exitosa sin cuerpo de respuesta |
+| `204 No Content` | Operación exitosa sin cuerpo |
 | `400 Bad Request` | Datos de entrada inválidos |
 | `401 Unauthorized` | Token ausente, inválido o expirado |
 | `403 Forbidden` | Sin permisos para el recurso |
 | `404 Not Found` | Recurso no encontrado |
-| `409 Conflict` | Conflicto (ej. DNI o email duplicado) |
+| `409 Conflict` | Conflicto (DNI o email duplicado) |
 | `500 Internal Server Error` | Error interno del servidor |
 
+---
 
-## 🛠️ Autoría y Créditos
+## Autoría
 
-Este proyecto fue diseñado, desarrollado e implementado en su totalidad por:
+Proyecto diseñado, desarrollado e implementado por:
 
-* **Desarrolladora:** Sheila JPM
-* **LinkedIn:** [Sheila Jacqueline Principe Merino](https://www.linkedin.com/in/sheila-jacqueline-principe-merino-1579802aa/)
-* **GitHub:** [@SHEILAJPM](https://github.com/SHEILAJPM)
-* **Contacto:** [principemerinosheila@Gmail.com](mailto:tu-correo@email.com)
+- **Desarrolladora:** Sheila JPM
+- **LinkedIn:** [Sheila Jacqueline Principe Merino](https://www.linkedin.com/in/sheila-jacqueline-principe-merino-1579802aa/)
+- **GitHub:** [@SHEILAJPM](https://github.com/SHEILAJPM)
+- **Contacto:** [principemerinosheila@gmail.com](mailto:principemerinosheila@gmail.com)
 
 ---
-*Proyecto desarrollado con fines de portafolio y demostración técnica en Ingeniería de Sistemas e Informática.*
+
+*Proyecto desarrollado con fines académicos — Ingeniería de Sistemas e Informática.*
