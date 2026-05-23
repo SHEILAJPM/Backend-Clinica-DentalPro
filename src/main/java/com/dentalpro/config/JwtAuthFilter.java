@@ -1,5 +1,6 @@
 package com.dentalpro.config;
 
+import com.dentalpro.paciente.PacienteRepository;
 import com.dentalpro.usuario.UsuarioRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,10 +20,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UsuarioRepository usuarioRepository;
+    private final PacienteRepository pacienteRepository;
 
-    public JwtAuthFilter(JwtUtil jwtUtil, UsuarioRepository usuarioRepository) {
+    public JwtAuthFilter(JwtUtil jwtUtil, UsuarioRepository usuarioRepository, PacienteRepository pacienteRepository) {
         this.jwtUtil = jwtUtil;
         this.usuarioRepository = usuarioRepository;
+        this.pacienteRepository = pacienteRepository;
     }
 
     @Override
@@ -46,14 +49,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String rol = jwtUtil.extractRol(token);
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            usuarioRepository.findByEmail(email).ifPresent(usuario -> {
+            Object principal = usuarioRepository.findByEmail(email)
+                    .map(u -> (Object) u)
+                    .orElseGet(() -> pacienteRepository.findByEmail(email).orElse(null));
+
+            if (principal != null) {
                 var auth = new UsernamePasswordAuthenticationToken(
-                        usuario,
+                        principal,
                         null,
                         List.of(new SimpleGrantedAuthority("ROLE_" + rol))
                 );
                 SecurityContextHolder.getContext().setAuthentication(auth);
-            });
+            }
         }
 
         chain.doFilter(request, response);

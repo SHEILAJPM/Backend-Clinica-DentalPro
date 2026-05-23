@@ -1,11 +1,14 @@
 package com.dentalpro.paciente;
 
+import com.dentalpro.atencion.AtencionRepository;
+import com.dentalpro.cita.CitaRepository;
 import com.dentalpro.paciente.dto.PacienteDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -15,9 +18,15 @@ import java.util.Map;
 public class PacienteService {
 
     private final PacienteRepository pacienteRepository;
+    private final CitaRepository citaRepository;
+    private final AtencionRepository atencionRepository;
 
-    public PacienteService(PacienteRepository pacienteRepository) {
+    public PacienteService(PacienteRepository pacienteRepository,
+                           CitaRepository citaRepository,
+                           AtencionRepository atencionRepository) {
         this.pacienteRepository = pacienteRepository;
+        this.citaRepository = citaRepository;
+        this.atencionRepository = atencionRepository;
     }
 
     public Map<String, Object> listar(int page, int size) {
@@ -67,8 +76,11 @@ public class PacienteService {
         return toDto(pacienteRepository.save(p));
     }
 
+    @Transactional
     public void eliminar(Long id) {
         getOrThrow(id);
+        atencionRepository.deletePorPacienteId(id);
+        citaRepository.deletePorPacienteId(id);
         pacienteRepository.deleteById(id);
     }
 

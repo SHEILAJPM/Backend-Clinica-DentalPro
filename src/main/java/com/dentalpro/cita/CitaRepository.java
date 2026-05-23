@@ -32,4 +32,9 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
     List<Object[]> countByFechaSince(@Param("desde") LocalDate desde);
 
     boolean existsByOdontologoId(Long odontologoId);
+
+    @org.springframework.transaction.annotation.Transactional
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query("DELETE FROM Cita c WHERE c.paciente.id = :pacienteId")
+    void deletePorPacienteId(@org.springframework.data.repository.query.Param("pacienteId") Long pacienteId);
 }

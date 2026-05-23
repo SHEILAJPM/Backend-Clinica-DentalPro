@@ -27,10 +27,10 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        crearUsuario("Administrador General", "admin@dental.com",      "Admin123!", Usuario.Rol.ADMINISTRADOR);
-        crearUsuario("Recepcionista",         "recepcion@dental.com",  "Admin123!", Usuario.Rol.RECEPCIONISTA);
-        crearUsuario("Dr. Carlos Mendoza",    "doctor@dental.com",     "Admin123!", Usuario.Rol.ODONTOLOGO);
-        crearUsuario("Dra. Laura Quispe",     "doctora@dental.com",    "Admin123!", Usuario.Rol.ODONTOLOGO);
+        crearUsuario("Administrador General", "admin@dental.com",      "123456", Usuario.Rol.ADMINISTRADOR);
+        crearUsuario("Recepcionista",         "recepcion@dental.com",  "123456", Usuario.Rol.RECEPCIONISTA);
+        crearUsuario("Dr. Carlos Mendoza",    "doctor@dental.com",     "123456", Usuario.Rol.ODONTOLOGO);
+        crearUsuario("Dra. Laura Quispe",     "doctora@dental.com",    "123456", Usuario.Rol.ODONTOLOGO);
 
         crearPaciente("Ana Torres Ramírez",    "12345678", LocalDate.of(1990, 3, 15), "987654321", "ana.torres@gmail.com");
         crearPaciente("Luis García Peña",      "23456789", LocalDate.of(1985, 7, 22), "976543210", "luis.garcia@gmail.com");
