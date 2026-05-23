@@ -40,6 +40,13 @@ public class PagoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagoService.crear(dto));
     }
 
+    @PatchMapping("/{id}/cobrar")
+    ResponseEntity<PagoDto> cobrar(@PathVariable Long id, @RequestBody Map<String, Object> body) {
+        Double monto = ((Number) body.get("monto")).doubleValue();
+        String metodoPago = (String) body.get("metodoPago");
+        return ResponseEntity.ok(pagoService.cobrar(id, monto, metodoPago));
+    }
+
     @PatchMapping("/{id}/estado")
     ResponseEntity<PagoDto> cambiarEstado(@PathVariable Long id, @RequestBody Map<String, String> body) {
         return ResponseEntity.ok(pagoService.cambiarEstado(id, body.get("estado")));

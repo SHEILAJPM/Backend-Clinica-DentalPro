@@ -1,6 +1,7 @@
 package com.dentalpro.cita;
 
 import com.dentalpro.paciente.Paciente;
+import com.dentalpro.tratamiento.TratamientoCatalogo;
 import com.dentalpro.usuario.Usuario;
 import jakarta.persistence.*;
 import java.time.LocalDate;
@@ -21,6 +22,10 @@ public class Cita {
     @JoinColumn(name = "odontologo_id", nullable = false)
     private Usuario odontologo;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tratamiento_id")
+    private TratamientoCatalogo tratamiento;
+
     @Column(nullable = false)
     private LocalDate fecha;
 
@@ -39,6 +44,8 @@ public class Cita {
     public enum Estado { PENDIENTE, ATENDIDO, CANCELADO, REAGENDADO }
 
     public Long getId() { return id; }
+    public TratamientoCatalogo getTratamiento() { return tratamiento; }
+    public void setTratamiento(TratamientoCatalogo v) { this.tratamiento = v; }
     public Paciente getPaciente() { return paciente; }
     public void setPaciente(Paciente v) { this.paciente = v; }
     public Usuario getOdontologo() { return odontologo; }

@@ -22,10 +22,11 @@ public class ReporteService {
         this.citaRepository = citaRepository;
     }
 
-    public Map<String, Object> listar(int page, int size) {
-        Page<Reporte> result = reporteRepository.findAll(
-                PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "fecha"))
-        );
+    public Map<String, Object> listar(int page, int size, String odontologoNombre) {
+        var pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "fecha"));
+        Page<Reporte> result = (odontologoNombre != null && !odontologoNombre.isBlank())
+                ? reporteRepository.findByOdontologoNombre(odontologoNombre, pageable)
+                : reporteRepository.findAll(pageable);
         return Map.of(
                 "content", result.getContent().stream().map(this::toDto).toList(),
                 "totalElements", result.getTotalElements(),

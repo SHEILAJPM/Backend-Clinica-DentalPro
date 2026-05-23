@@ -14,5 +14,7 @@ public record CitaDto(
         @NotNull LocalDate fecha,
         @NotBlank String hora,
         String motivo,
-        String estado
+        String estado,
+        Long tratamientoId,
+        Double tratamientoPrecio
 ) {}

@@ -2,6 +2,8 @@ package com.dentalpro.cita;
 
 import com.dentalpro.cita.dto.CitaDto;
 import com.dentalpro.paciente.PacienteRepository;
+import com.dentalpro.tratamiento.TratamientoCatalogo;
+import com.dentalpro.tratamiento.TratamientoCatalogoRepository;
 import com.dentalpro.usuario.UsuarioRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,11 +18,14 @@ public class CitaService {
     private final CitaRepository citaRepository;
     private final PacienteRepository pacienteRepository;
     private final UsuarioRepository usuarioRepository;
+    private final TratamientoCatalogoRepository tratamientoRepository;
 
-    public CitaService(CitaRepository citaRepository, PacienteRepository pacienteRepository, UsuarioRepository usuarioRepository) {
+    public CitaService(CitaRepository citaRepository, PacienteRepository pacienteRepository,
+                       UsuarioRepository usuarioRepository, TratamientoCatalogoRepository tratamientoRepository) {
         this.citaRepository = citaRepository;
         this.pacienteRepository = pacienteRepository;
         this.usuarioRepository = usuarioRepository;
+        this.tratamientoRepository = tratamientoRepository;
     }
 
     public List<CitaDto> listarPorFecha(String fecha) {
@@ -59,6 +64,9 @@ public class CitaService {
         cita.setHora(dto.hora());
         cita.setMotivo(dto.motivo());
         cita.setEstado(Cita.Estado.PENDIENTE);
+        if (dto.tratamientoId() != null) {
+            tratamientoRepository.findById(dto.tratamientoId()).ifPresent(cita::setTratamiento);
+        }
         return toDto(citaRepository.save(cita));
     }
 
@@ -75,6 +83,9 @@ public class CitaService {
         cita.setHora(dto.hora());
         cita.setMotivo(dto.motivo());
         cita.setEstado(Cita.Estado.REAGENDADO);
+        cita.setTratamiento(dto.tratamientoId() != null
+                ? tratamientoRepository.findById(dto.tratamientoId()).orElse(null)
+                : null);
         return toDto(citaRepository.save(cita));
     }
 
@@ -98,6 +109,7 @@ public class CitaService {
     }
 
     private CitaDto toDto(Cita c) {
+        TratamientoCatalogo t = c.getTratamiento();
         return new CitaDto(
                 c.getId(),
                 c.getPaciente().getId(),
@@ -107,7 +119,9 @@ public class CitaService {
                 c.getFecha(),
                 c.getHora(),
                 c.getMotivo(),
-                c.getEstado().name()
+                c.getEstado().name(),
+                t != null ? t.getId() : null,
+                t != null ? t.getPrecio() : null
         );
     }
 }

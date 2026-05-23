@@ -22,8 +22,9 @@ public class ReporteController {
     @GetMapping
     ResponseEntity<Map<String, Object>> listar(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(reporteService.listar(page, size));
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String odontologoNombre) {
+        return ResponseEntity.ok(reporteService.listar(page, size, odontologoNombre));
     }
 
     @GetMapping("/{id}")

@@ -2,6 +2,8 @@ package com.dentalpro.atencion;
 
 import com.dentalpro.atencion.dto.AtencionDto;
 import com.dentalpro.cita.CitaRepository;
+import com.dentalpro.pago.Pago;
+import com.dentalpro.pago.PagoRepository;
 import com.dentalpro.reporte.Reporte;
 import com.dentalpro.reporte.ReporteRepository;
 import org.springframework.http.HttpStatus;
@@ -16,13 +18,16 @@ public class AtencionService {
     private final AtencionRepository atencionRepository;
     private final CitaRepository citaRepository;
     private final ReporteRepository reporteRepository;
+    private final PagoRepository pagoRepository;
 
     public AtencionService(AtencionRepository atencionRepository,
                            CitaRepository citaRepository,
-                           ReporteRepository reporteRepository) {
+                           ReporteRepository reporteRepository,
+                           PagoRepository pagoRepository) {
         this.atencionRepository = atencionRepository;
         this.citaRepository = citaRepository;
         this.reporteRepository = reporteRepository;
+        this.pagoRepository = pagoRepository;
     }
 
     public AtencionDto crear(AtencionDto dto) {
@@ -45,6 +50,16 @@ public class AtencionService {
             r.setTratamiento(dto.tratamiento());
             r.setObservaciones(dto.observaciones() != null ? dto.observaciones() : "");
             reporteRepository.save(r);
+        }
+
+        if (pagoRepository.findByAtencionId(saved.getId()).isEmpty()) {
+            double monto = cita.getTratamiento() != null ? cita.getTratamiento().getPrecio() : 0.0;
+            Pago p = new Pago();
+            p.setAtencion(saved);
+            p.setMonto(monto);
+            p.setMetodoPago(Pago.MetodoPago.EFECTIVO);
+            p.setEstado(Pago.Estado.PENDIENTE);
+            pagoRepository.save(p);
         }
 
         return toDto(saved);

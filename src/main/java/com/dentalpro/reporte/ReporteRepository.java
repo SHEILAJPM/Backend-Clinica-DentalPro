@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface ReporteRepository extends JpaRepository<Reporte, Long> {
     Optional<Reporte> findByCitaId(Long citaId);
     Page<Reporte> findAll(Pageable pageable);
+    Page<Reporte> findByOdontologoNombre(String odontologoNombre, Pageable pageable);
 }

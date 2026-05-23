@@ -47,6 +47,17 @@ public class PagoService {
         return toDto(pagoRepository.save(p));
     }
 
+    public PagoDto cobrar(Long id, Double monto, String metodoPago) {
+        Pago p = getOrThrow(id);
+        if (p.getEstado() != Pago.Estado.PENDIENTE) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Solo se pueden cobrar pagos en estado PENDIENTE");
+        }
+        p.setMonto(monto);
+        p.setMetodoPago(Pago.MetodoPago.valueOf(metodoPago));
+        p.setEstado(Pago.Estado.PAGADO);
+        return toDto(pagoRepository.save(p));
+    }
+
     public PagoDto cambiarEstado(Long id, String estado) {
         Pago p = getOrThrow(id);
         p.setEstado(Pago.Estado.valueOf(estado));
