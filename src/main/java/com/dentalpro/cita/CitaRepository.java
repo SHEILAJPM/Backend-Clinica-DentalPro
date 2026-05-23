@@ -33,6 +33,8 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
 
     boolean existsByOdontologoId(Long odontologoId);
 
+    java.util.Optional<Cita> findByPacienteIdAndFechaAndHora(Long pacienteId, java.time.LocalDate fecha, String hora);
+
     @org.springframework.transaction.annotation.Transactional
     @org.springframework.data.jpa.repository.Modifying
     @org.springframework.data.jpa.repository.Query("DELETE FROM Cita c WHERE c.paciente.id = :pacienteId")

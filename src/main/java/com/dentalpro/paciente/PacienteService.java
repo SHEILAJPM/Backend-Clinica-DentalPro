@@ -2,6 +2,8 @@ package com.dentalpro.paciente;
 
 import com.dentalpro.atencion.AtencionRepository;
 import com.dentalpro.cita.CitaRepository;
+import com.dentalpro.historial.HistorialClinicoRepository;
+import com.dentalpro.pago.PagoRepository;
 import com.dentalpro.paciente.dto.PacienteDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,13 +22,19 @@ public class PacienteService {
     private final PacienteRepository pacienteRepository;
     private final CitaRepository citaRepository;
     private final AtencionRepository atencionRepository;
+    private final HistorialClinicoRepository historialRepository;
+    private final PagoRepository pagoRepository;
 
     public PacienteService(PacienteRepository pacienteRepository,
                            CitaRepository citaRepository,
-                           AtencionRepository atencionRepository) {
+                           AtencionRepository atencionRepository,
+                           HistorialClinicoRepository historialRepository,
+                           PagoRepository pagoRepository) {
         this.pacienteRepository = pacienteRepository;
         this.citaRepository = citaRepository;
         this.atencionRepository = atencionRepository;
+        this.historialRepository = historialRepository;
+        this.pagoRepository = pagoRepository;
     }
 
     public Map<String, Object> listar(int page, int size) {
@@ -79,8 +87,10 @@ public class PacienteService {
     @Transactional
     public void eliminar(Long id) {
         getOrThrow(id);
+        pagoRepository.deletePorPacienteId(id);
         atencionRepository.deletePorPacienteId(id);
         citaRepository.deletePorPacienteId(id);
+        historialRepository.deleteByPacienteId(id);
         pacienteRepository.deleteById(id);
     }
 
