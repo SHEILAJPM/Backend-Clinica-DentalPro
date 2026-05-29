@@ -43,7 +43,10 @@ public class SecurityConfig {
                                          "/api/auth/registro-paciente",
                                          "/api/auth/forgot-password",
                                          "/api/auth/verify-code",
-                                         "/api/auth/reset-password").permitAll()
+                                         "/api/auth/reset-password",
+                                         "/swagger-ui/**",
+                                         "/swagger-ui.html",
+                                         "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/pacientes/**").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "ODONTOLOGO")
                         .requestMatchers("/api/pacientes/**").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA")
                         .requestMatchers("/api/citas/**").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA", "ODONTOLOGO")
